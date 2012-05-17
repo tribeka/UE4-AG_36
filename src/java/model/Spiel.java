@@ -6,10 +6,17 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import java.beans.*;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.*;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import publishservice.*;
+import publishservice.InfoType.Players;
+import publishservice.InfoType.Players.Screenname;
+import publishservice.InfoType.Winner;
 
 @ManagedBean(name = "mygame")
 @SessionScoped
@@ -21,6 +28,9 @@ public class Spiel implements Serializable {
     private Integer Round;
     private long Starttime;
     private Boolean Over;
+    
+    private Spieler WinPlayer;
+    private String GUID;
 
     @ManagedProperty(value = "#{login}")
     private LoginCtrl login;
@@ -65,6 +75,8 @@ public class Spiel implements Serializable {
         Playarea = new SpielfeldImpl(Players);
         Round = 0;
         Over = false;
+        WinPlayer = null;
+        GUID = "";
         Starttime = new Date().getTime();
         for (Spieler s : Players)
             LastDies.get(s).clear();
@@ -118,7 +130,7 @@ public class Spiel implements Serializable {
         return Round;
     }
 
-    public String doRound() {
+    public String doRound() throws DatatypeConfigurationException {
         if (Over) {
             return "";
         }
@@ -151,6 +163,52 @@ public class Spiel implements Serializable {
             // neue Runde - zurueck zur view
             Round++;
         }
+        
+        // if over -> publish to scoreboard
+        if(Over) {
+            Game game = new Game();
+            
+            InfoType info = new InfoType();
+            info.setName("Gruppe 36 Game");
+            
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTimeInMillis(Starttime);
+            info.setStarted(DatatypeFactory.newInstance().newXMLGregorianCalendar(cal));
+            info.setRounds(BigInteger.valueOf((long)Round));
+            
+            Winner winner = new Winner();
+            winner.setPlayer(Players.indexOf(WinPlayer) + 1);
+            info.setWinner(winner);
+            
+            Players plrs = new Players();
+            plrs.setNumber(Players.size());
+            List<Screenname> scrname = plrs.getScreenname();
+            for(Spieler p : Players) {
+                Screenname sname = new Screenname();
+                sname.setPlayer(Players.indexOf(p) + 1);
+                sname.setValue(p.getName());
+                scrname.add(sname);
+            }
+            info.setPlayers(plrs);
+            
+            game.setInfo(info);
+            
+            HighScoreRequestType req = new HighScoreRequestType();
+            req.setUserKey("G8N4P3E5D2S8Y4X2V9M5N");
+            req.setGame(game);
+            
+            try {
+                PublishHighScoreService service = new PublishHighScoreService();
+                PublishHighScoreEndpoint endpoint = service.getPublishHighScorePort();
+                GUID = endpoint.publishHighScore(req);
+                System.out.println(GUID);
+                
+            } catch(Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+
+        
         return "";
     }
 
@@ -184,6 +242,7 @@ public class Spiel implements Serializable {
         // gewonnen?
         if (this.Playarea.isPlayerFinished(player)) {
             this.Over = true;
+            this.WinPlayer = player;
         }
     }
 
