@@ -1,5 +1,8 @@
 package model;
 
+import at.ac.big.tuwien.ewa.twitter.Score;
+import at.ac.big.tuwien.ewa.twitter.TwitterConnector;
+import at.ac.big.tuwien.ewa.twitter.TwitterConnectorImpl;
 import controller.LoginCtrl;
 
 import javax.faces.bean.ManagedBean;
@@ -8,6 +11,9 @@ import java.beans.*;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
@@ -17,6 +23,8 @@ import publishservice.*;
 import publishservice.InfoType.Players;
 import publishservice.InfoType.Players.Screenname;
 import publishservice.InfoType.Winner;
+import twitter4j.Status;
+import twitter4j.TwitterException;
 
 @ManagedBean(name = "mygame")
 @SessionScoped
@@ -205,6 +213,27 @@ public class Spiel implements Serializable {
                 
             } catch(Exception ex) {
                 System.out.println(ex.getMessage());
+            }
+            
+            // Publish to Twitter
+            Score twitterScore = new Score(GUID, WinPlayer.getName());
+            TwitterConnector twitterCon = new TwitterConnectorImpl();
+            try {
+                Status status = twitterCon.postMessage(twitterScore);
+                // Send statusmessage to user
+                ResourceBundle b = ResourceBundle.getBundle("i18n", 
+                    FacesContext.getCurrentInstance().getViewRoot().getLocale());
+                String msgText = "UUID " + GUID + " " + b.getString("twittermsg");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, msgText, null);
+                FacesContext.getCurrentInstance().addMessage("Twitter:", msg);
+            } catch (TwitterException ex) {
+                Logger.getLogger(Spiel.class.getName()).log(Level.SEVERE, null, ex);
+                // Exception Handling - eigene Statusmessage
+                ResourceBundle b = ResourceBundle.getBundle("i18n", 
+                    FacesContext.getCurrentInstance().getViewRoot().getLocale());
+                String msgText = b.getString("twittererror");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, msgText, null);
+                FacesContext.getCurrentInstance().addMessage("Twitter:", msg);
             }
         }
 
