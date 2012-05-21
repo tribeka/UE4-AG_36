@@ -73,7 +73,11 @@
                         </ui:repeat>
                         </tbody>
                     </table>
+                    
                 </h:panelGroup>
+                <c:if test="#{mygame.humanPlayer.avatar != null}">
+                    <h:graphicImage url="#{mygame.humanPlayer.avatar.url}" alt="#{mygame.humanPlayer.avatar.description}"/>
+                    </c:if>
                 <h:panelGroup id="dicearea" layout="block">
                     <hr class="accessibility"/>
                     <h2 class="accessibility">#{msg.dice}</h2>

@@ -4,6 +4,7 @@
  */
 package controller;
 
+import at.ac.big.tuwien.ewa.picasa.Avatar;
 import java.io.Serializable;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -16,6 +17,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
+import model.AvatarList;
 import model.Spieler;
 import model.SpielerDatenbank;
 
@@ -28,6 +30,13 @@ import model.SpielerDatenbank;
 public class RegisterCtrl implements Serializable {
     @ManagedProperty(value="#{spieler}")
     private Spieler player;
+    
+    @ManagedProperty(value="")
+    private String avatarDesc;
+    
+    @ManagedProperty(value="#{avatarprovider}")
+    private AvatarList avprovider;
+
     
     @ManagedProperty(value = "false")
     private boolean displaypersonal;    
@@ -56,9 +65,30 @@ public class RegisterCtrl implements Serializable {
         this.displaypersonal = displaypersonal;
     }
     
+    public AvatarList getAvprovider() {
+        return avprovider;
+    }
+
+    public void setAvprovider(AvatarList avprovider) {
+        this.avprovider = avprovider;
+    }
+    
     // Register new player
     public String register()
     {
+        Avatar a = null;
+        try
+        {
+            a = avprovider.getAvatarByDesc(this.getAvatarDesc());
+        }
+        catch(Exception e)
+        {
+            //do nothing
+        }
+        if(a != null)
+            player.setAvatar(a);
+        
+        
         // Add new Player to player Database
         getPlayerbase().addPlayer(player);
         return "/login.xhtml";
@@ -149,4 +179,13 @@ public class RegisterCtrl implements Serializable {
     public void setPlayerbase(SpielerDatenbank playerbase) {
         this.playerbase = playerbase;
     }
+    public String getAvatarDesc() {
+        return avatarDesc;
+    }
+
+    public void setAvatarDesc(String avatarDesc) {
+        this.avatarDesc = avatarDesc;
+    }
+    
+    
 }

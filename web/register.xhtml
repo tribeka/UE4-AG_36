@@ -51,6 +51,12 @@
                                 <f:validateLength minimum="3"/>
                                 <f:validateRegex pattern="((?=.*\d)(?=.*[a-zA-Z]).{3,20})"/>
                             </h:inputSecret>
+                            <h:outputLabel value="#{msg.avatar} " for="avatar"/>
+                            <h:selectOneMenu id="avatar" required="true" label="#{msg.avatar}" value="#{register.avatarDesc}">
+                                <c:forEach items="${avatarprovider.avatars}" var="avatar">
+                                    <f:selectItem id="#{avatar.description}" itemLabel="#{avatar.description}" itemValue="#{avatar.description}"/>
+                                </c:forEach>
+                            </h:selectOneMenu>
                         </h:panelGrid>
                     </div>
 

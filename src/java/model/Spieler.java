@@ -1,5 +1,6 @@
 package model;
 
+import at.ac.big.tuwien.ewa.picasa.Avatar;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import java.beans.*;
@@ -24,6 +25,8 @@ public class Spieler implements Serializable {
     private String lastName;
     private String dateOfBirth;
     private String gender;
+    private Avatar avatar;
+
 
     public Spieler() {
         Name = "";
@@ -110,5 +113,14 @@ public class Spieler implements Serializable {
      */
     public void setGender(String gender) {
         this.gender = gender;
+    }
+    
+    
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
     }
 }
