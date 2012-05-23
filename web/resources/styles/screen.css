@@ -107,6 +107,12 @@ table tbody {
 	margin: 0px;
 }
 
+#avatararea {
+    position: absolute;
+    top: 310px;
+    left: 0;
+}
+
 #dicearea {
 	float:left;
 	width:120px;

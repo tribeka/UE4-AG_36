@@ -75,9 +75,7 @@
                     </table>
                     
                 </h:panelGroup>
-                <c:if test="#{mygame.humanPlayer.avatar != null}">
-                    <h:graphicImage url="#{mygame.humanPlayer.avatar.url}" alt="#{mygame.humanPlayer.avatar.description}"/>
-                    </c:if>
+                
                 <h:panelGroup id="dicearea" layout="block">
                     <hr class="accessibility"/>
                     <h2 class="accessibility">#{msg.dice}</h2>
@@ -90,6 +88,11 @@
                             <f:ajax event="action" render=":play_area :info_area :resetform :dicearea :infogegner"/>
                         </h:commandButton>
                     </h:form>
+                </h:panelGroup>
+                <h:panelGroup id="avatararea" layout="block">
+                <c:if test="#{mygame.humanPlayer.avatar != null}">
+                    <h:graphicImage url="#{mygame.humanPlayer.avatar.url}" alt="#{mygame.humanPlayer.avatar.description}"/>
+                </c:if>
                 </h:panelGroup>
                 <h:panelGroup layout="block" id="play_area">
                     <hr class="accessibility"/>
