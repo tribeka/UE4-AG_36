@@ -209,10 +209,10 @@ public class Spiel implements Serializable {
                 PublishHighScoreService service = new PublishHighScoreService();
                 PublishHighScoreEndpoint endpoint = service.getPublishHighScorePort();
                 GUID = endpoint.publishHighScore(req);
-                System.out.println(GUID);
+                Logger.getLogger(Spiel.class.getName()).log(Level.INFO, "GUID: " + GUID);
                 
             } catch(Exception ex) {
-                System.out.println(ex.getMessage());
+                Logger.getLogger(Spiel.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             // Publish to Twitter
