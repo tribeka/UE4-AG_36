@@ -50,13 +50,16 @@ public class Spiel implements Serializable {
         this.login = (LoginCtrl) context.getApplication().evaluateExpressionGet(context, "#{login}", LoginCtrl.class);
 
         Spieler player = login.getPlayer();
+        Spieler player2 = login.getPlayer();
 
         if (player == null)
             player = new Spieler("Gast");
+        if (player2 == null)
+            player2 = new Spieler("Gast");
 
         this.humanplayer = player;
 
-        Players = Arrays.asList(this.humanplayer, new Spieler("Computer"));
+        Players = Arrays.asList(player, player2);
 
         LastDies = new HashMap<Spieler, LinkedList<Integer>>();
 
@@ -78,7 +81,7 @@ public class Spiel implements Serializable {
 
         this.reset();
     }
-
+    
     public final String reset() {
         Playarea = new SpielfeldImpl(Players);
         Round = 0;
@@ -142,8 +145,8 @@ public class Spiel implements Serializable {
         if (Over) {
             return "";
         }
-        Spieler humanPlayer = Players.get(0);
-        Spieler computerPlayer = Players.get(1);
+        Spieler player1 = Players.get(0);
+        Spieler player2 = Players.get(1);
 
         for (Spieler s : Players)
             LastDies.get(s).clear();
@@ -152,25 +155,33 @@ public class Spiel implements Serializable {
         int wurf = wuerfle();
 
         // spielzug
-        this.spielzug(humanPlayer, wurf);
-        LastDies.get(humanPlayer).offer(wurf);
+        this.spielzug(humanplayer, wurf);
+        LastDies.get(humanplayer).offer(wurf);
 
         // if wuerfel == 6, zurueck zur view, da Spieler nochmals an der Reihe ist
-        if ((wurf != 6) && (!Over)) {
+        if ((wurf != 6) && (!Over) && ("Computer".equals(player2.getName()))) {
             do {
                 // Computer player - getWuerfel
                 wurf = wuerfle();
 
                 // spielzug Computer
-                this.spielzug(computerPlayer, wurf);
+                this.spielzug(player2, wurf);
 
                 // if wuerfel == 6, nochmals
-                LastDies.get(computerPlayer).offer(wurf);
+                LastDies.get(player2).offer(wurf);
             } while ((wurf == 6) && (!Over));
 
             // neue Runde - zurueck zur view
             Round++;
         }
+        else if (humanplayer.equals(player2)) {
+            humanplayer = player1;
+            Round++;
+        }
+        else {
+            humanplayer = player2;
+        }
+        
         
         // if over -> publish to scoreboard
         if(Over) {
@@ -285,20 +296,11 @@ public class Spiel implements Serializable {
 
         Spieler s = Players.get(0);
         Integer i = 0;
-        if (!LastDies.get(s).isEmpty()) {
+        if (!LastDies.get(humanplayer).isEmpty()) {
             i = LastDies.get(s).getLast();
         }
 
         return i.toString();
-    }
-
-    public List<Integer> getPlayer2DiceRolls() throws Exception {
-        if (Players.size() < 2)
-            throw new Exception("Invalid player");
-
-        Spieler s = Players.get(1);
-
-        return LastDies.get(s);
     }
 
     public String getDestroy() {

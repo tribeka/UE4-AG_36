@@ -85,7 +85,7 @@
                                          image="resources/img/wuerfel#{mygame.player1DiceRolls}.png"
                                          alt="#{msg.dice} #{msg.dice_number} #{mygame.player1DiceRolls}"
                                          title="#{msg.dice} #{msg.dice_number} #{mygame.player1DiceRolls}">
-                            <f:ajax event="action" render=":play_area :info_area :resetform :dicearea :infogegner"/>
+                            <f:ajax event="action" render=":play_area :info_area :resetform :dicearea"/>
                         </h:commandButton>
                     </h:form>
                 </h:panelGroup>
@@ -186,12 +186,6 @@
                             </ol>
                         </div>
                         <div class="clearer"></div>
-                        <h:panelGroup layout="block" id="infogegner">
-                            #{msg.dice_computer_rolls}
-                            <c:forEach items="${mygame.player2DiceRolls}" var="score">
-                                #{score}&nbsp;
-                            </c:forEach>
-                        </h:panelGroup>
                     </div>
                 </h:panelGroup>
                 <h:messages style="color: red"/>
