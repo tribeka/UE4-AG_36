@@ -14,11 +14,13 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import org.icefaces.application.PushRenderer;
 import publishservice.*;
 import publishservice.InfoType.Players;
 import publishservice.InfoType.Players.Screenname;
@@ -27,7 +29,7 @@ import twitter4j.Status;
 import twitter4j.TwitterException;
 
 @ManagedBean(name = "mygame")
-@SessionScoped
+@ApplicationScoped
 public class Spiel implements Serializable {
     private List<Spieler> Players;
     private Spielfeld Playarea;
@@ -47,27 +49,21 @@ public class Spiel implements Serializable {
 
     public Spiel() throws Exception {
         FacesContext context = FacesContext.getCurrentInstance();
-        this.login = (LoginCtrl) context.getApplication().evaluateExpressionGet(context, "#{login}", LoginCtrl.class);
 
-        Spieler player = login.getPlayer();
-        Spieler player2 = login.getPlayer();
-
-        if (player == null)
-            player = new Spieler("Gast");
-        if (player2 == null)
-            player2 = new Spieler("Gast");
-
-        this.humanplayer = player;
-
-        Players = Arrays.asList(player, player2);
-
+        Players = new ArrayList<Spieler>();
         LastDies = new HashMap<Spieler, LinkedList<Integer>>();
-
-        for (Spieler s : Players)
-            LastDies.put(s, new LinkedList<Integer>());
-
-
-        this.reset();
+    }
+    
+    public void addPlayer(Spieler player)
+    {
+        if(Players.size() > 2)
+            return;
+        
+        Players.add(player);
+        LastDies.put(player, new LinkedList<Integer>());
+        
+        //PushRenderer.addCurrentSession("game");
+       this.reset();
     }
 
     public Spiel(Spieler player) {
@@ -91,6 +87,10 @@ public class Spiel implements Serializable {
         Starttime = new Date().getTime();
         for (Spieler s : Players)
             LastDies.get(s).clear();
+        
+        if(Players.size() > 0)
+            humanplayer = Players.get(0);
+        
         return "/table.xhtml";
     }
 
@@ -124,7 +124,7 @@ public class Spiel implements Serializable {
     }
 
     public Spieler getHumanPlayer() {
-        return Players.get(0);
+        return humanplayer;
     }
 
     public int getPlayersCnt() {
@@ -145,8 +145,9 @@ public class Spiel implements Serializable {
         if (Over) {
             return "";
         }
-        Spieler player1 = Players.get(0);
-        Spieler player2 = Players.get(1);
+        Spieler player1 = humanplayer;
+        
+        Spieler player2 = Players.get(1-Players.indexOf(humanplayer));
 
         for (Spieler s : Players)
             LastDies.get(s).clear();
@@ -174,14 +175,17 @@ public class Spiel implements Serializable {
             // neue Runde - zurueck zur view
             Round++;
         }
-        else if (humanplayer.equals(player2)) {
+     /*   else if (humanplayer.equals(player2)) {
             humanplayer = player1;
             Round++;
         }
         else {
             humanplayer = player2;
+        }*/
+        else {
+            humanplayer = player2;
         }
-        
+        PushRenderer.render("game");
         
         // if over -> publish to scoreboard
         if(Over) {

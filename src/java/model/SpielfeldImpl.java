@@ -24,8 +24,8 @@ class SpielfeldImpl implements Spielfeld {
 
     // Erstellt ein neues Spielfeld. Erster Spieler ist gelb, zweiter grün, dritter rot, vierter blau.
     public SpielfeldImpl(List<Spieler> players) {
-        if (players == null || players.size() < 2)
-            throw new IllegalArgumentException("At least 2 players are required.");
+        if (players == null)
+            throw new IllegalArgumentException("Players cannot be null.");
 
         if (players.size() > 4)
             throw new IllegalArgumentException("More than 4 players are not supported.");
@@ -39,9 +39,11 @@ class SpielfeldImpl implements Spielfeld {
         FinishFields = new EnumMap<PlayerColor, FeldImpl>(PlayerColor.class);
         FirstFields = new EnumMap<PlayerColor, FeldImpl>(PlayerColor.class);
 
-
-        playercolors.put(playerlist.get(0), PlayerColor.Yellow);
-        playercolors.put(playerlist.get(1), PlayerColor.Green);
+        if(playerlist.size() > 0)
+            playercolors.put(playerlist.get(0), PlayerColor.Yellow);
+        
+        if(playerlist.size() > 1)
+            playercolors.put(playerlist.get(1), PlayerColor.Green);
 
         if (playerlist.size() > 2) {
             playercolors.put(playerlist.get(2), PlayerColor.Red);
