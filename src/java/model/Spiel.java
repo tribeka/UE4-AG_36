@@ -38,6 +38,7 @@ public class Spiel implements Serializable {
     private Integer Round;
     private long Starttime;
     private Boolean Over;
+    private Boolean sixRolled;
     
     private Spieler WinPlayer;
     private String GUID;
@@ -49,6 +50,7 @@ public class Spiel implements Serializable {
 
         Players = new ArrayList<Spieler>();
         LastDies = new HashMap<Spieler, LinkedList<Integer>>();
+        sixRolled = false;
     }
     
     public void addPlayer(Spieler player)
@@ -156,32 +158,15 @@ public class Spiel implements Serializable {
         this.spielzug(humanplayer, wurf);
         LastDies.get(humanplayer).offer(wurf);
 
+        if (wurf == 6) sixRolled = true;
+        else sixRolled = false;
+        
         // if wuerfel == 6, zurueck zur view, da Spieler nochmals an der Reihe ist
-        if ((wurf != 6) && (!Over) && ("Computer".equals(player2.getName()))) {
-            do {
-                // Computer player - getWuerfel
-                wurf = wuerfle();
-
-                // spielzug Computer
-                this.spielzug(player2, wurf);
-
-                // if wuerfel == 6, nochmals
-                LastDies.get(player2).offer(wurf);
-            } while ((wurf == 6) && (!Over));
-
-            // neue Runde - zurueck zur view
-            Round++;
-        }
-     /*   else if (humanplayer.equals(player2)) {
-            humanplayer = player1;
-            Round++;
-        }
-        else {
-            humanplayer = player2;
-        }*/
-        else {
+        if ((wurf != 6) && (!Over)) {
             humanplayer = player2;
         }
+        // neue Runde - zurueck zur view
+        Round++;
         PushRenderer.render("game");
         
         // if over -> publish to scoreboard
@@ -294,11 +279,12 @@ public class Spiel implements Serializable {
     public String getPlayer1DiceRolls() throws Exception {
         if (Players.size() < 1)
             throw new Exception("Invalid player");
-
-        Spieler s = humanplayer;
+        if (Players.size() == 1) return "0";
+        Spieler s = Players.get(1-Players.indexOf(humanplayer));
+        if (sixRolled) s = humanplayer;
         // Spieler s = Players.get(0);
         Integer i = 0;
-        if (!LastDies.get(humanplayer).isEmpty()) {
+        if (!LastDies.get(s).isEmpty()) {
             i = LastDies.get(s).getLast();
         }
 
