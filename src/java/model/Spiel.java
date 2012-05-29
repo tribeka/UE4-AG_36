@@ -42,9 +42,6 @@ public class Spiel implements Serializable {
     private Spieler WinPlayer;
     private String GUID;
 
-    @ManagedProperty(value = "#{login}")
-    private LoginCtrl login;
-
     private Spieler humanplayer;
 
     public Spiel() throws Exception {
@@ -328,18 +325,5 @@ public class Spiel implements Serializable {
         this.humanplayer = humanplayer;
     }
 
-    /**
-     * @return the login
-     */
-    public LoginCtrl getLogin() {
-        return login;
-    }
-
-    /**
-     * @param login the login to set
-     */
-    public void setLogin(LoginCtrl login) {
-        this.login = login;
-    }
 
 }
