@@ -1,14 +1,14 @@
 package model;
 
 import at.ac.big.tuwien.ewa.picasa.Avatar;
-import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import java.beans.*;
 import java.io.Serializable;
 import java.util.LinkedList;
+import javax.faces.bean.SessionScoped;
 
 @ManagedBean
-@ApplicationScoped
+@SessionScoped
 public class Spieler implements Serializable {
 
     private String Name;

@@ -42,9 +42,6 @@ public class Spiel implements Serializable {
     private Spieler WinPlayer;
     private String GUID;
 
-    @ManagedProperty(value = "#{login}")
-    private LoginCtrl login;
-
     private Spieler humanplayer;
 
     public Spiel() throws Exception {
@@ -298,7 +295,8 @@ public class Spiel implements Serializable {
         if (Players.size() < 1)
             throw new Exception("Invalid player");
 
-        Spieler s = Players.get(0);
+        Spieler s = humanplayer;
+        // Spieler s = Players.get(0);
         Integer i = 0;
         if (!LastDies.get(humanplayer).isEmpty()) {
             i = LastDies.get(s).getLast();
@@ -328,18 +326,5 @@ public class Spiel implements Serializable {
         this.humanplayer = humanplayer;
     }
 
-    /**
-     * @return the login
-     */
-    public LoginCtrl getLogin() {
-        return login;
-    }
-
-    /**
-     * @param login the login to set
-     */
-    public void setLogin(LoginCtrl login) {
-        this.login = login;
-    }
 
 }

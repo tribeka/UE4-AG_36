@@ -7,6 +7,8 @@ package controller;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -63,7 +65,6 @@ public class LoginCtrl implements Serializable {
             FacesContext context = FacesContext.getCurrentInstance();
             Spiel mygame = (Spiel) context.getApplication().evaluateExpressionGet(context, "#{mygame}", Spiel.class);
             mygame.addPlayer(this.player);
-            
             return "/table.xhtml";
         }    
         else
