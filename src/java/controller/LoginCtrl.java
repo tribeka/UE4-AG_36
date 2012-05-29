@@ -14,6 +14,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import model.Spiel;
 import model.Spieler;
 import model.SpielerDatenbank;
 
@@ -58,6 +59,11 @@ public class LoginCtrl implements Serializable {
         {    
             this.player = playerbase.getPlayer(username);
             loginfailed = false;
+            // get application scoped game
+            FacesContext context = FacesContext.getCurrentInstance();
+            Spiel mygame = (Spiel) context.getApplication().evaluateExpressionGet(context, "#{mygame}", Spiel.class);
+            mygame.addPlayer(this.player);
+            
             return "/table.xhtml";
         }    
         else
